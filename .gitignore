@@ -259,3 +259,4 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+Relimetrics_OpenGL_Assesment/Relimetrics_OpenGL_Assesment.vcxproj.filters
