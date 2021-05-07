@@ -1,5 +1,5 @@
 /*
- * Relimetrics_OpenGL_Assesment - v0.11
+ * Relimetrics_OpenGL_Assesment - v0.12
  * 
  * Created by Furkan Cetin (08/05/2021)
  * 
@@ -9,8 +9,21 @@
 #include <windows.h>  
 #include <GL/glut.h> 
 
+#define MODE_NONE    0;
+#define MODE_DRAWING 1;
+
 GLint ww = 1200, hh = 800;
 GLint vp[4];
+float zoom = 1.0;
+
+int mainmode = MODE_NONE;
+
+
+static void setMainmode(int _mode)
+{
+	if (mainmode != _mode)
+	mainmode = _mode;
+}
 
 static void funcReshape(int _width, int _height)
 {
@@ -20,14 +33,36 @@ static void funcReshape(int _width, int _height)
 	glGetIntegerv(GL_VIEWPORT, vp);
 }
 
+static void funcKeyPressed(unsigned char key, int x, int y)
+{
+	switch (key) {
+	case 'o':
+	case 'O':
+		zoom *= 0.75;
+		glutPostRedisplay();
+		break;
+	case 'p':
+	case 'P':
+		zoom /= 0.75;
+		glutPostRedisplay();
+		break;
+	case 'd':
+	case 'D':	
+		mainmode = MODE_DRAWING;
+		break;
+	case 27:
+		exit(0);
+	}
+}
+
 static void funcRender()
 {
 	glBegin(GL_QUADS);
 	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex2f(-5.0f, -5.0f);
-	glVertex2f(5.0f, -5.0f);
-	glVertex2f(5.0f, 5.0f);
-	glVertex2f(-5.0f, 5.0f);
+	glVertex2f(-50.0f, -50.0f);
+	glVertex2f(50.0f, -50.0f);
+	glVertex2f(50.0f, 50.0f);
+	glVertex2f(-50.0f, 50.0f);
 	glEnd();
 }
 void funcDisplay() {
@@ -39,6 +74,8 @@ void funcDisplay() {
 	glMatrixMode(GL_MODELVIEW);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	glScalef(zoom, zoom, zoom);
 
 	funcRender();
 
@@ -55,6 +92,7 @@ int main(int argc, char** argv) {
 	glutInitWindowSize(ww, hh);							
 	glutInitWindowPosition(50, 50);
 
+	glutKeyboardFunc(funcKeyPressed);
 	glutReshapeFunc(funcReshape);
 	glutDisplayFunc(funcDisplay);								
 	glutMainLoop();											
