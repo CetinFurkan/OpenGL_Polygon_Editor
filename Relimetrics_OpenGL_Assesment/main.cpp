@@ -8,6 +8,7 @@
 
 #include <windows.h>  
 #include <GL/glut.h> 
+#include <iostream>
 
 #define MODE_NONE    0;
 #define MODE_DRAWING 1;
@@ -17,6 +18,8 @@ GLint vp[4];
 float zoom = 1.0;
 
 int mainmode = MODE_NONE;
+
+
 
 
 static void setMainmode(int _mode)
@@ -51,20 +54,63 @@ static void funcKeyPressed(unsigned char key, int x, int y)
 		mainmode = MODE_DRAWING;
 		break;
 	case 27:
-		exit(0);
+		if (mainmode != 0)
+			mainmode = 0;
+		else
+			exit(0);
+
+		break;
 	}
+}
+
+static void funcMouse(int btn, int state, int x, int y)
+{
+	if (state == GLUT_DOWN) {
+
+		switch (btn) {
+		case GLUT_LEFT_BUTTON:
+			std::cout << "left click at: (" << x << ", " << y << ")\n";
+			break;
+		case GLUT_RIGHT_BUTTON:
+			std::cout << "right click at: (" << x << ", " << y << ")\n";
+			break;
+		case GLUT_MIDDLE_BUTTON:
+			std::cout << "middle click at: (" << x << ", " << y << ")\n";
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+
+static void glColorRGB(GLfloat _r, GLfloat _g, GLfloat _b){
+	glColor3f(_r/255.0f , _g / 255.0f, _b / 255.0f);
 }
 
 static void funcRender()
 {
 	glBegin(GL_QUADS);
-	glColor3f(1.0f, 0.0f, 0.0f);
+	glColorRGB(255, 0, 0);
 	glVertex2f(-50.0f, -50.0f);
 	glVertex2f(50.0f, -50.0f);
 	glVertex2f(50.0f, 50.0f);
 	glVertex2f(-50.0f, 50.0f);
 	glEnd();
 }
+
+static void funcCoordinate()
+{
+	glBegin(GL_LINES);
+	glColorRGB(255, 255, 255);
+	glVertex2f(0.0f,  10000.0f);
+	glVertex2f(0.0f, -10000.0f);
+	glVertex2f(-10000.0f, 0.0f);
+	glVertex2f( 10000.0f, 0.0f);
+	glEnd();
+
+}
+
 void funcDisplay() {
 
 	glPushMatrix();
@@ -77,6 +123,7 @@ void funcDisplay() {
 
 	glScalef(zoom, zoom, zoom);
 
+	funcCoordinate();
 	funcRender();
 
 	glPopMatrix();
@@ -92,6 +139,7 @@ int main(int argc, char** argv) {
 	glutInitWindowSize(ww, hh);							
 	glutInitWindowPosition(50, 50);
 
+	glutMouseFunc(funcMouse);
 	glutKeyboardFunc(funcKeyPressed);
 	glutReshapeFunc(funcReshape);
 	glutDisplayFunc(funcDisplay);								
