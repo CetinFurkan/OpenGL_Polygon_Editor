@@ -6,24 +6,31 @@
 #include "Point.h"
 #include "MathHelper.h"
 
+
 class Polygonic
 {
-	
-
 public:
 	Polygonic();
 
 	void addPoint(Point*);
 	void addPoint(float, float);
-	
-private:
-	Point* pos;
-	std::vector<Point*> listPoint;
 
-	bool updateIsClosed();
+	Point* getLastPoint();
+
+	bool checkPointIsCloseToFirstPoint(Point * _p);
+
+	bool checkIfClosed();
+	
+protected:
+
+	Point* pos;
+	vector<Point*> listPoint;
+	unsigned int size = 0;
+
+	
 	bool isClosed = false;
 
-
+	friend class GLDrawer;
 };
 
 #endif POLYGONIC_H

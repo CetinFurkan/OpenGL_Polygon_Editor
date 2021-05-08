@@ -12,28 +12,46 @@ using namespace std;
 #define  M_PI 3.14159265359
 
 #ifndef degtorad
-#define  degtorad(a)           a*0.01745329252
+#define  degtorad(a)    a*0.01745329252
 #endif
 
 #ifndef radtodeg
-#define  radtodeg(a)           a/0.01745329252
+#define  radtodeg(a)    a/0.01745329252
 #endif
 
 #ifndef max
-#define  max(a,b)            (((a) > (b)) ? (a) : (b))
+#define  max(a,b)       (((a) > (b)) ? (a) : (b))
 #endif
 
 #ifndef min
-#define  min(a,b)            (((a) < (b)) ? (a) : (b))
+#define  min(a,b)       (((a) < (b)) ? (a) : (b))
 #endif
 
 #ifndef limit
-#define limit(v,n,x)       max(n, min(x, v))
+#define limit(v,n,x)    max(n, min(x, v))
 #endif
 
 #ifndef sign
-#define  sign(v)            ((_v > 0) - (_v < 0))
+#define  sign(v)         ((_v > 0) - (_v < 0))
 #endif
+
+
+static float isInsidePointInRect(Point* _a, float _x, float _y, float _w, float _h) {
+	//checking each boundry one by one and this is the most efficient way
+	if (_a->getX() > _x)
+		if (_a->getX() < _x + _w)
+			if (_a->getY() > _y)
+				if (_a->getY() < _y + _h)
+					return true;
+
+	return false;
+}
+
+static float isInsidePointInCircle(Point* _a, float _x, float _y, float _r) {
+	//distance to the center ofthe circle
+	return sqrt(pow(_a->getX() - _x, 2.0) + pow(_a->getY() - _y, _r));
+}
+
 
 static float dist(Point* _a, Point* _b) {
 	return sqrt(pow(_a->getX() - _b->getX(), 2.0) + pow(_a->getY() - _b->getY(), 2.0));

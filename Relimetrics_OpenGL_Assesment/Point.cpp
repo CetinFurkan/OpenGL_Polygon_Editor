@@ -9,6 +9,11 @@ Point::Point(float _x, float _y) {
 	y = _y;
 }
 
+Point::Point(Point *_p) {
+	x = _p->x;
+	y = _p->y;
+}
+
 
 void Point::setX(float _x) {
 	x = _x;

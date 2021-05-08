@@ -2,11 +2,17 @@
 #ifndef POINT_H
 #define POINT_H
 
+struct PointData {
+	float x;
+	float y;
+};
+
 class Point
 {
 public:
 	Point();
 	Point(float, float);
+	Point(Point*);
 
 	void setX(float);
 	void setY(float);

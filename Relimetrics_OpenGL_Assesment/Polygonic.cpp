@@ -5,17 +5,34 @@ Polygonic::Polygonic() {
 	cout << "Polygonic is initialized";
 }
 
-void Polygonic::addPoint(Point* _newPoint)
+void Polygonic::addPoint(Point* _pointNewToAdd)
 {
-	listPoint.push_back(_newPoint);
+	listPoint.push_back(_pointNewToAdd);
+	size += 1;
 }
 
 void Polygonic::addPoint(float _x, float _y) {
 	listPoint.push_back(new Point(_x,_y));
+	size += 1;
 }
 
-bool Polygonic::updateIsClosed()
+Point* Polygonic::getLastPoint() {
+	return listPoint[size - 1];
+}
+
+bool Polygonic::checkPointIsCloseToFirstPoint(Point* _p)
 {
-	return (dist(*listPoint.begin(), *listPoint.end()) < 0.1f);
+	if (size <= 2)
+		return false;
+
+	return (dist(_p, listPoint[0]) < 3.0f);
+}
+
+bool Polygonic::checkIfClosed()
+{
+	if (size <= 2)
+		return false;
+
+	return (dist(listPoint[0], listPoint[size-1]) < 3.0f);
 }
 
