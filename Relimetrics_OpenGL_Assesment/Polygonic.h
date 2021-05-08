@@ -3,7 +3,6 @@
 #define POLYGONIC_H
 
 #include "Common.h"
-#include "Point.h"
 #include "MathHelper.h"
 
 
@@ -23,11 +22,9 @@ public:
 	
 protected:
 
-	Point* pos;
 	vector<Point*> listPoint;
 	unsigned int size = 0;
 
-	
 	bool isClosed = false;
 
 	friend class GLDrawer;

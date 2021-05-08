@@ -2,7 +2,6 @@
 
 Polygonic::Polygonic() {
 
-	cout << "Polygonic is initialized";
 }
 
 void Polygonic::addPoint(Point* _pointNewToAdd)
@@ -25,7 +24,7 @@ bool Polygonic::checkPointIsCloseToFirstPoint(Point* _p)
 	if (size <= 2)
 		return false;
 
-	return (dist(_p, listPoint[0]) < 3.0f);
+	return (dist(_p, listPoint[0]) < 5.0f);
 }
 
 bool Polygonic::checkIfClosed()
@@ -33,6 +32,6 @@ bool Polygonic::checkIfClosed()
 	if (size <= 2)
 		return false;
 
-	return (dist(listPoint[0], listPoint[size-1]) < 3.0f);
+	return (dist(listPoint[0], listPoint[size-1]) < 5.0f);
 }
 

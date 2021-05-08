@@ -1,5 +1,5 @@
 /*
- * Relimetrics_OpenGL_Assesment - v0.3.0
+ * Relimetrics_OpenGL_Assesment - v0.4.0
  *
  * Created by Furkan Cetin (08/05/2021)
  *
@@ -11,14 +11,11 @@
 
 #include "GLDrawer.h"
 
+#include <iostream>
 
-enum Modes
-{
-	MODE_NONE,
-	MODE_DRAWING,
-	MODE_EDITING,
-	MODE_POPUP,
-};
+
+using namespace std;
+
 
 enum Directions
 {
@@ -35,7 +32,6 @@ float zoomTarget = 1.0f;
 
 Point* viewPort;
 Point* viewPortTarget;
-Point* pointMouseOnScreen;
 Point* pointMousePressed;
 Point* pointMouseOnCanvas;
 Point* pointMouseOnCanvasSnappedToGrid;
@@ -45,54 +41,31 @@ GLDrawer* glDrawer;
 
 GLint vp[4];
 
+bool isDrawingMode = false;
 
-int mainmode = MODE_NONE;
 bool isPressingMouseButton = false;
 bool isMouseInsideCanvas = false;
+bool isControlKeyPressed = false;
 
 vector<Polygonic*> polygonList;
 Polygonic* polygonDrawn;
 
-static void setMainmode(Modes _mode)
-{
-	//These details are required for actions during the transitions between modes
-	if (mainmode == Modes::MODE_NONE)
-	{
-		if (mainmode == Modes::MODE_DRAWING) {
-			glutSetCursor(GLUT_CURSOR_CROSSHAIR);
-		}
-		else if (mainmode == Modes::MODE_EDITING) {
-			glutSetCursor(GLUT_CURSOR_INHERIT);
-		}
-	}
-	else if (mainmode == Modes::MODE_DRAWING)
-	{
-		if (mainmode == Modes::MODE_NONE) {
-			glutSetCursor(GLUT_CURSOR_INHERIT);
-		}
-		else if (mainmode == Modes::MODE_EDITING) {
-			glutSetCursor(GLUT_CURSOR_INHERIT);
-		}
-	}
-	else if (mainmode == Modes::MODE_EDITING)
-	{
-		if (mainmode == Modes::MODE_NONE) {
-			glutSetCursor(GLUT_CURSOR_INHERIT);
-		}
-		else if (mainmode == Modes::MODE_DRAWING) {
-			glutSetCursor(GLUT_CURSOR_CROSSHAIR);
-		}
-	}
 
-	if (mainmode != _mode)
-		mainmode = _mode;
+static void setDrawingMode(bool _mode)
+{
+	if (isDrawingMode == true && _mode == false)
+		glutSetCursor(GLUT_CURSOR_INHERIT);
+
+	if (isDrawingMode == false && _mode == true)
+		glutSetCursor(GLUT_CURSOR_CROSSHAIR);
+
+	isDrawingMode = _mode;
 }
 
 static void funcInit() {
 	viewPort = new Point(0, 0);
 	viewPortTarget = new Point(0, 0);
 
-	pointMouseOnScreen = new Point(0, 0);
 	pointMousePressed = new Point(0, 0);
 	pointMouseOnCanvas = new Point(0, 0);
 	pointMouseOnCanvasSnappedToGrid = new Point(0, 0);
@@ -100,7 +73,7 @@ static void funcInit() {
 	pointLastAdded = new Point(-1, -1);
 
 	glDrawer = new GLDrawer();
-	glDrawer->setCanvasPorperties(1200, 800, 20, GRID_TYPE_SQUARE_POINTS);
+	glDrawer->setCanvasPorperties(1200, 800, 8);
 
 	polygonDrawn = new Polygonic();
 }
@@ -117,43 +90,67 @@ void panScreen(Directions _dir, float _amount) {
 	if (_dir == DIR_LEFT) {
 		viewPortTarget->setRelX(_amount * (1.0f / ww));
 	}
-	else 	if (_dir == DIR_RIGHT) {
+	else if (_dir == DIR_RIGHT) {
 		viewPortTarget->setRelX(-_amount * (1.0f / ww));
 	}
 
 	if (_dir == DIR_UP) {
 		viewPortTarget->setRelY(-_amount * (1.0f / hh));
 	}
-	else 	if (_dir == DIR_DOWN) {
+	else if (_dir == DIR_DOWN) {
 		viewPortTarget->setRelY(_amount * (1.0f / hh));
 	}
 }
 
+static void funcSpecialKeyUp(int _key, int _x, int _y)
+{
+	//if (glutGetModifiers() == GLUT_ACTIVE_CTRL)
+	//	isControlKeyPressed = false;
+}
+
 static void funcSpecialKey(int _key, int _x, int _y)
 {
+	cout << "CTRL: " << _key  << endl;
+
+	if (_key == GLUT_KEY_F1)
+		glDrawer->setRenderingMode(RENDER_POINTS);
+	else if (_key == GLUT_KEY_F2)
+		glDrawer->setRenderingMode(RENDER_LINES);
+	else if (_key == GLUT_KEY_F3)
+		glDrawer->setRenderingMode(RENDER_POLYGON);
+
 	if (_key == GLUT_KEY_LEFT)
 		panScreen(DIR_LEFT, 40);
 	else if (_key == GLUT_KEY_RIGHT)
 		panScreen(DIR_RIGHT, 40);
 
-
 	if (_key == GLUT_KEY_UP)
 		panScreen(DIR_UP, 40);
 	else if (_key == GLUT_KEY_DOWN)
 		panScreen(DIR_DOWN, 40);
+
+	//if (glutGetModifiers() == GLUT_ACTIVE_CTRL)
+	//	isControlKeyPressed = true;
 }
 
 void funcIdle()
 {
+	
+	
+		
+
 	glutPostRedisplay();
 }
 
 
 static void funcKey(unsigned char _key, int x, int y)
 {
+	//Pan Screen by changing viewPortTarget
 	viewPortTarget->setRelX((_key == 'd' || _key == 'D') * 36 * (1.0f / ww) - (_key == 'a' || _key == 'A') * 36 * (1.0f / ww));
 	viewPortTarget->setRelY((_key == 'w' || _key == 'W') * 36 * (1.0f / hh) - (_key == 's' || _key == 'S') * 36 * (1.0f / hh));
 
+
+	//Zooming
 	if (_key == 'o' || _key == 'O') {
 		zoomTarget *= 0.75;
 		cout << zoomTarget;
@@ -163,29 +160,34 @@ static void funcKey(unsigned char _key, int x, int y)
 		cout << zoomTarget;
 	}
 
-	if (_key == 't' || _key == 'T')
-		setMainmode(MODE_DRAWING);
 
+	//Drawing mode activation is on key T
+	if (_key == 't' || _key == 'T')
+		setDrawingMode(true);
+
+	//BONUS: Turn on/off Showing Grid and Snapping Grid 
+	if (_key == 'g' || _key == 'G')
+		glDrawer->switchGridOnOff();
+
+	//ESC Key to exit
 	if (_key == 27) {
-		if (mainmode != 0)
-			setMainmode(MODE_NONE);
-		else
-			exit(0);
+		exit(0);
 	}
 }
 
 void updateMousePositions(int _x, int _y) {
-	pointMouseOnScreen->setXY(_x, _y);
 	pointMouseOnCanvas->setX((_x - (viewPort->getX()*ww / 2.0 + ww / 2.0)) / zoom);
 	pointMouseOnCanvas->setY((_y - (viewPort->getY()*-hh / 2.0 + hh / 2.0)) / zoom);
 
-	//Calculating the point SNAPPED to the grid
+	//Calculating the point SNAPPED to the grid 
 	pointMouseOnCanvasSnappedToGrid->setX(glDrawer->getSnappedGridValueX(pointMouseOnCanvas->getX()));
 	pointMouseOnCanvasSnappedToGrid->setY(glDrawer->getSnappedGridValueY(pointMouseOnCanvas->getY()));
 
+	//Checking if cursor is within the boundries of Canvas
 	isMouseInsideCanvas = glDrawer->isPointInsideOfCanvas(pointMouseOnCanvas);
 
-	if (mainmode == MODE_DRAWING) {
+	//Cursor manipulation
+	if (isDrawingMode) {
 		if (!isMouseInsideCanvas)
 			glutSetCursor(GLUT_CURSOR_DESTROY);
 		else
@@ -205,7 +207,8 @@ void funcMouseDragging(int _x, int _y)
 {
 	updateMousePositions(_x, _y);
 
-	if (mainmode == MODE_DRAWING)
+	//Pannig screen is disabled when drawing mode
+	if (isDrawingMode)
 		return;
 
 	//Functions for panning the screen by mouse
@@ -221,37 +224,24 @@ static void funcMouse(int _btn, int _state, int _x, int _y)
 	updateMousePositions(_x, _y);
 
 	if (_state == GLUT_DOWN) {
+		pointMousePressed->setXY(_x, _y);
 		isPressingMouseButton = true;
-		switch (_btn) {
-		case GLUT_LEFT_BUTTON:
-			cout << "left click at: (" << _x << ", " << _y << ")  << " << zoom << "\n";
-			pointMousePressed->setXY(_x, _y);
-			break;
-		case GLUT_RIGHT_BUTTON:
-			cout << "right click at: (" << _x << ", " << _y << ")\n";
-			break;
-		case GLUT_MIDDLE_BUTTON:
-			cout << "middle click at: (" << _x << ", " << _y << ")\n";
-			break;
-		default:
-			break;
-		}
 	}
-	else if (_state == GLUT_UP && _btn == GLUT_LEFT_BUTTON) {
+	else if (_state == GLUT_UP) {
 		isPressingMouseButton = false;
 
-		if (mainmode == MODE_DRAWING) {
+		if (isDrawingMode) {
 			if (glDrawer->isPointInsideOfCanvas(pointMouseOnCanvas)) {
+				pointLastAdded->setXYfromPoint(pointMouseOnCanvasSnappedToGrid);
 
+				//New point will be added into polygon
 				Point* pointNewToAdd = new Point(pointMouseOnCanvasSnappedToGrid);
-
-				pointLastAdded->setXYfromPoint(pointNewToAdd);
-
 				polygonDrawn->addPoint(pointNewToAdd);
+
 				if (polygonDrawn->checkIfClosed()) {
-					setMainmode(MODE_NONE);
-					polygonList.push_back(polygonDrawn);
-					polygonDrawn = new Polygonic();
+					setDrawingMode(false);
+					polygonList.push_back(polygonDrawn);  //Pushing the draw polygon
+					polygonDrawn = new Polygonic();		  //Recreating new polygon for next drawing
 					pointLastAdded->setXY(-1, -1);
 				}
 			}
@@ -270,13 +260,13 @@ static void drawPolygons()
 	for (auto it = polygonList.begin(); it != polygonList.end(); ++it)
 		glDrawer->drawPolygon(*it, COLOR_BLUE, 2);
 
-	ColorType colorPolygonDrawn = COLOR_RED;
+	ColorType colorPolygonDrawn = COLOR_ORANGE;
 	if (polygonDrawn->checkPointIsCloseToFirstPoint(pointMouseOnCanvasSnappedToGrid))
 		colorPolygonDrawn = COLOR_GREEN;
 
 	glDrawer->drawPolygon(polygonDrawn, colorPolygonDrawn, 2);
 
-	if (mainmode == MODE_DRAWING && isMouseInsideCanvas && pointLastAdded->getX() > -1 && isPressingMouseButton)
+	if (isDrawingMode && isMouseInsideCanvas && pointLastAdded->getX() > -1 && isPressingMouseButton)
 	{
 		glDrawer->drawLine(pointLastAdded, pointMouseOnCanvasSnappedToGrid, COLOR_ORANGE, 2);
 	}
@@ -313,16 +303,6 @@ void funcTimer10ms(int _t) {
 	glutTimerFunc(10, funcTimer10ms, 0);
 }
 
-void funcTimer100ms(int _t) {
-
-	glutTimerFunc(100, funcTimer100ms, 0);
-}
-
-void funcTimer1000ms(int _t) {
-
-	glutTimerFunc(1000, funcTimer1000ms, 0);
-}
-
 
 int main(int argc, char** argv) {
 
@@ -334,24 +314,22 @@ int main(int argc, char** argv) {
 
 	glutInitWindowSize(1200, 800);
 	glutCreateWindow("Relimetrics - OpenGL Assessment");
-
 	glutInitWindowPosition(50, 50);
 
-	glutIdleFunc(funcIdle);
-
 	glutTimerFunc(20, funcTimer10ms, 0);
-	glutTimerFunc(100, funcTimer100ms, 0);
-	glutTimerFunc(1000, funcTimer1000ms, 0);
 
+	glutIdleFunc(funcIdle);
 	glutMouseFunc(funcMouse);
 	glutMotionFunc(funcMouseDragging);
 	glutPassiveMotionFunc(funcMouseIdle);
-
-
 	glutKeyboardFunc(funcKey);
+
 	glutSpecialFunc(funcSpecialKey);
+	//glutSpecialUpFunc(funcSpecialKeyUp);
+
 	glutReshapeFunc(funcReshape);
 	glutDisplayFunc(funcDisplay);
+
 	glutMainLoop();
 	return 0;
 }
