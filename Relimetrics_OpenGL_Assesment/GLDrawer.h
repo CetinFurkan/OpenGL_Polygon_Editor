@@ -4,26 +4,59 @@
 #ifndef GLDRAWER_H
 #define GLDRAWER_H
 
-#define COLOR_WHITE  0
-#define COLOR_BLACK  1
-#define COLOR_RED    2
-#define COLOR_BLUE   3
-#define COLOR_GREEN  4
-#define COLOR_YELLOW 5
-#define COLOR_ORANGE 6
-#define COLOR_AQUA   7
 
-class GLDrawer
+enum Colors
 {
-	GLDrawer();
-	~GLDrawer();
+	COLOR_WHITE,
+	COLOR_BLACK,
+	COLOR_RED,
+	COLOR_BLUE,
+	COLOR_GREEN,
+	COLOR_YELLOW,
+	COLOR_ORANGE,
+	COLOR_AQUA,
+};
 
-public:
-	void drawPolygon(Polygonic*);
-
+enum GridType
+{
+	GRID_TYPE_EMPTY,
+	GRID_TYPE_SQUARE,
+	GRID_TYPE_POINTS,
+	GRID_TYPE_SQUARE_POINTS,
+	GRID_TYPE_SQUARE_DOUBLE,
+	GRID_TYPE_NUMBERS,
 };
 
 
+//TODO: NEEDS TO BE A SINGLETON!!!
+class GLDrawer
+{
+
+public:
+	GLDrawer();
+	~GLDrawer();
+
+	void drawPolygon(Polygonic*);
+
+	void setCanvasPorperties(int, int, int, GridType);
+	void drawCanvasWithGrid();
+
+	void setCanvasType(GridType);
+
+protected:
+	int canvasWidth = 0;
+	int canvasHeight = 0;
+	int gridSize = 0;
+	GridType gridType = GRID_TYPE_SQUARE;
+
+	void drawRectFilled(float _x, float _y, float _w, float _h);
+	void drawSquareGrid(float _x, float _y, int _w, int _h, float _size, float _t);
+	void drawPointGrid(float _x, float _y, int _w, int _h, float _size, float _t);
+	
+};
+
+
+//These functions are seperated in order to be used without GLDrawer object
 static void glColorRGB(GLfloat _r, GLfloat _g, GLfloat _b) {
 	glColor3f(_r / 255.0f, _g / 255.0f, _b / 255.0f);
 }

@@ -1,5 +1,5 @@
 /*
- * Relimetrics_OpenGL_Assesment - v0.2
+ * Relimetrics_OpenGL_Assesment - v0.2.1
  *
  * Created by Furkan Cetin (08/05/2021)
  *
@@ -12,8 +12,14 @@
 #include "GLDrawer.h"
 
 
-#define MODE_NONE    0;
-#define MODE_DRAWING 1;
+enum Modes
+{
+	MODE_NONE,
+	MODE_DRAWING,
+	MODE_EDITING,
+	MODE_POPUP,
+};
+
 
 GLint ww = 1200, hh = 800;
 
@@ -21,6 +27,8 @@ Point* viewPort;
 Point* viewPortTarget;
 Point* mouseNow;
 Point* mousePressed;
+
+GLDrawer* glDrawer;
 
 GLint vp[4];
 float zoom = 1.0;
@@ -44,6 +52,9 @@ static void funcInit() {
 
 	mouseNow = new Point(0, 0);
 	mousePressed = new Point(0, 0);
+
+	glDrawer = new GLDrawer();
+	glDrawer->setCanvasPorperties(800,600,20,GRID_TYPE_SQUARE_POINTS);
 }
 
 static void funcReshape(int _width, int _height)
@@ -95,11 +106,11 @@ static void funcKey(unsigned char _key, int x, int y)
 	}
 
 	if (_key == 't' || _key == 'T')
-		mainmode = MODE_DRAWING;
+		setMainmode(MODE_DRAWING);
 
 	if (_key == 27) {
 		if (mainmode != 0)
-			mainmode = 0;
+			setMainmode(MODE_NONE);
 		else
 			exit(0);
 	}
@@ -146,28 +157,24 @@ static void funcMouse(int _btn, int _state, int _x, int _y)
 }
 
 
-
-
-static void funcRender()
+static void drawCanvas()
 {
-	glBegin(GL_QUADS);
+	glDrawer->drawCanvasWithGrid();
+	/*
+	glBegin(GL_LINE_LOOP);
 	glColorRGB(255,0,0);
-	glVertex2f(-50.0f, -50.0f);
-	glVertex2f(50.0f, -50.0f);
-	glVertex2f(50.0f, 50.0f);
-	glVertex2f(-50.0f, 50.0f);
-	glEnd();
+	glVertex2f(0.0f, 0.0f);
+	glVertex2f(0.0f, hh);
+	glVertex2f(  ww, hh);
+	glVertex2f(  ww, 0.0f);
+	glEnd();*/
+	
 }
 
-static void funcCoordinate()
+static void drawGrid()
 {
-	glBegin(GL_LINES);
-	glColorRGB(255,255,255);
-	glVertex2f(0.0f, 10000.0f);
-	glVertex2f(0.0f, -10000.0f);
-	glVertex2f(-10000.0f, 0.0f);
-	glVertex2f(10000.0f, 0.0f);
-	glEnd();
+
+	
 }
 
 void funcDisplay() {
@@ -183,8 +190,8 @@ void funcDisplay() {
 
 	glScalef(zoom, zoom, zoom);
 
-	funcCoordinate();
-	funcRender();
+	drawGrid();
+	drawCanvas();
 
 	glPopMatrix();
 	glutSwapBuffers();
@@ -218,8 +225,6 @@ int main(int argc, char** argv) {
 	glutInitWindowSize(ww, hh);
 
 	glutInitWindowPosition(50, 50);
-
-	glViewport(0, 0, ww, hh);
 
 	glutIdleFunc(funcIdle);
 
