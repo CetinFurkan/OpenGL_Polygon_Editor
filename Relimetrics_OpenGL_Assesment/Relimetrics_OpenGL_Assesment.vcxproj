@@ -123,7 +123,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GLDrawer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Point.cpp" />
+    <ClCompile Include="Polygonic.cpp" />
+    <ClCompile Include="Color.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Common.h" />
+    <ClInclude Include="GLDrawer.h" />
+    <ClInclude Include="MathHelper.h" />
+    <ClInclude Include="Point.h" />
+    <ClInclude Include="Polygonic.h" />
+    <ClInclude Include="Color.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
