@@ -8,8 +8,8 @@
 #include <cstdint>
 
 #include "Point.h"
-#include "Polygonic.h"
-#include "PolygonicArray.h"
+#include "PolygonParent.h"
+#include "PolygonArray.h"
 #include "PolygonVector.h"
 
 using namespace std;

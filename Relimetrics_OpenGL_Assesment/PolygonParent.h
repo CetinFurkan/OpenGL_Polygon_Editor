@@ -7,10 +7,10 @@
 #include "Point.h"
 
 
-class Polygonic
+class PolygonParent
 {
 public:
-	Polygonic();
+	PolygonParent();
 
 	virtual void addPoint(Point) = 0;
 	virtual Point getFirstPoint() = 0;

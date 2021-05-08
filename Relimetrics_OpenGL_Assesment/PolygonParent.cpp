@@ -1,12 +1,12 @@
-#include "Polygonic.h"
+#include "PolygonParent.h"
 
-Polygonic::Polygonic() {
+PolygonParent::PolygonParent() {
 
 }
 
 
 /*
-bool Polygonic::checkPointIsCloseToFirstPoint(Point _p)
+bool PolygonParent::checkPointIsCloseToFirstPoint(Point _p)
 {
 	if (size <= 2)
 		return false;
@@ -14,7 +14,7 @@ bool Polygonic::checkPointIsCloseToFirstPoint(Point _p)
 	return (dist(_p, listPoint[0]) < 5.0f);
 }
 
-bool Polygonic::checkIfClosed()
+bool PolygonParent::checkIfClosed()
 {
 	if (size <= 2)
 		return false;

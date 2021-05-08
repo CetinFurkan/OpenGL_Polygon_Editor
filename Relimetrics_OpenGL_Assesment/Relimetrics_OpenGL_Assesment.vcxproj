@@ -125,8 +125,8 @@
   <ItemGroup>
     <ClCompile Include="GLDrawer.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Polygonic.cpp" />
-    <ClCompile Include="PolygonicArray.cpp" />
+    <ClCompile Include="PolygonParent.cpp" />
+    <ClCompile Include="PolygonArray.cpp" />
     <ClCompile Include="PolygonVector.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -134,8 +134,8 @@
     <ClInclude Include="GLDrawer.h" />
     <ClInclude Include="MathHelper.h" />
     <ClInclude Include="Point.h" />
-    <ClInclude Include="Polygonic.h" />
-    <ClInclude Include="PolygonicArray.h" />
+    <ClInclude Include="PolygonParent.h" />
+    <ClInclude Include="PolygonArray.h" />
     <ClInclude Include="PolygonVector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

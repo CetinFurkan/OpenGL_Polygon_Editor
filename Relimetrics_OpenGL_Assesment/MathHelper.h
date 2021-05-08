@@ -11,19 +11,19 @@ using namespace std;
 #define  M_PI 3.14159265359
 
 #ifndef degtorad
-#define  degtorad(a)    a*0.01745329252
+#define degtorad(a)    a*0.01745329252
 #endif
 
 #ifndef radtodeg
-#define  radtodeg(a)    a/0.01745329252
+#define radtodeg(a)    a/0.01745329252
 #endif
 
 #ifndef max
-#define  max(a,b)       (((a) > (b)) ? (a) : (b))
+#define max(a,b)       (((a) > (b)) ? (a) : (b))
 #endif
 
 #ifndef min
-#define  min(a,b)       (((a) < (b)) ? (a) : (b))
+#define min(a,b)       (((a) < (b)) ? (a) : (b))
 #endif
 
 #ifndef limit
@@ -31,7 +31,7 @@ using namespace std;
 #endif
 
 #ifndef sign
-#define  sign(v)         ((_v > 0) - (_v < 0))
+#define sign(v)         ((_v > 0) - (_v < 0))
 #endif
 
 

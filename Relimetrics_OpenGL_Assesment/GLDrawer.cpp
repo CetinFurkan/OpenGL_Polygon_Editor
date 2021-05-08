@@ -34,8 +34,9 @@ void GLDrawer::drawLine(Point _p0, Point _p1, ColorType _col, int _t)
 }
 
 
-void GLDrawer::drawPolygon(Polygonic *_p, ColorType _col, uint8_t _t)
+void GLDrawer::drawPolygon(PolygonParent *_p, ColorType _col, uint8_t _t)
 {
+	//cout << _p->getSize();
 
 	if (activeRenderType == RENDER_POLYGON) {
 		glBegin(GL_TRIANGLE_FAN);
@@ -72,7 +73,7 @@ void GLDrawer::drawPolygon(Polygonic *_p, ColorType _col, uint8_t _t)
 
 	if (activeRenderType == RENDER_POINTS) {
 		glBegin(GL_POINTS);
-		glColorRGB(listColor[_col].r, listColor[_col].g, listColor[_col].b);
+		glColorRGB(255,255,255);
 		glPointSize(15.0);
 		for (uint8_t i = 0; i < _p->getSize(); i++)
 		{

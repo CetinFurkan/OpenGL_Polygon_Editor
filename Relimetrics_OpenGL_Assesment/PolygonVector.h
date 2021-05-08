@@ -2,12 +2,12 @@
 #ifndef POLYGONVECTOR_H
 #define POLYGONVECTOR_H
 
-#include "Polygonic.h"
+#include "PolygonParent.h"
 #include <vector>
 
 using namespace std;
 
-class PolygonVector : public Polygonic
+class PolygonVector : public PolygonParent
 {
 public:
 	PolygonVector();

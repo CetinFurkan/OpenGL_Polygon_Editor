@@ -38,7 +38,7 @@ public:
 	GLDrawer();
 	~GLDrawer();
 
-	void drawPolygon(Polygonic*, ColorType , uint8_t);
+	void drawPolygon(PolygonParent*, ColorType , uint8_t);
 	void drawLine(Point, Point, ColorType, int);
 
 	void setCanvasPorperties(int, int, int);

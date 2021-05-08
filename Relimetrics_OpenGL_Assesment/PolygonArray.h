@@ -2,13 +2,13 @@
 #ifndef POLYGONICARRAY_H
 #define POLYGONICARRAY_H
 
-#include "Polygonic.h"
+#include "PolygonParent.h"
 
 
-class PolygonicArray: public Polygonic
+class PolygonArray: public PolygonParent
 {
 public:
-	PolygonicArray(int _size);
+	PolygonArray(int _size);
 
 	void addPoint(Point);
 	Point getFirstPoint();

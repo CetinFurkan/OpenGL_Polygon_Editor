@@ -18,23 +18,20 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Polygonic.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GLDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PolygonicArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PolygonVector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PolygonArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PolygonParent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Polygonic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Common.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -44,13 +41,16 @@
     <ClInclude Include="MathHelper.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="PolygonicArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PolygonVector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Point.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PolygonArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PolygonParent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

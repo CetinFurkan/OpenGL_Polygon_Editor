@@ -1,7 +1,7 @@
 /*
- * Relimetrics_OpenGL_Assesment - v0.4.0
+ * Relimetrics_OpenGL_Assesment - v0.5.0
  *
- * Created by Furkan Cetin (08/05/2021)
+ * Created by Furkan Cetin (09/05/2021)
  *
  */
 
@@ -47,7 +47,7 @@ bool isPressingMouseButton = false;
 bool isMouseInsideCanvas = false;
 bool isControlKeyPressed = false;
 
-vector<PolygonicArray*> polygonList;
+vector<PolygonArray*> polygonList;
 PolygonVector* polygonDrawn;
 
 static void setDrawingMode(bool _mode)
@@ -117,7 +117,7 @@ static void funcSpecialKey(int _key, int _x, int _y)
 	else if (_key == GLUT_KEY_F3)
 		glDrawer->setRenderingMode(RENDER_POLYGON);
 
-	if (_key == GLUT_KEY_LEFT) 
+	if (_key == GLUT_KEY_LEFT)
 		panScreen(DIR_LEFT, 40);
 	else if (_key == GLUT_KEY_RIGHT)
 		panScreen(DIR_RIGHT, 40);
@@ -127,13 +127,14 @@ static void funcSpecialKey(int _key, int _x, int _y)
 	else if (_key == GLUT_KEY_DOWN)
 		panScreen(DIR_DOWN, 40);
 
+	//Detection CTRL is not working
 	//if (glutGetModifiers() == GLUT_ACTIVE_CTRL)
 	//	isControlKeyPressed = true;
 }
 
 void funcIdle()
 {
-	glutPostRedisplay();
+	//glutPostRedisplay();
 }
 
 
@@ -146,14 +147,11 @@ static void funcKey(unsigned char _key, int x, int y)
 
 	//Zooming
 	if (_key == 'o' || _key == 'O') {
-		zoomTarget *= 0.75;
-		cout << zoomTarget;
+		zoomTarget /= 0.75;
 	}
 	else if (_key == 'p' || _key == 'P') {
-		zoomTarget /= 0.75;
-		cout << zoomTarget;
+		zoomTarget *= 0.75;
 	}
-
 
 	//Drawing mode activation is on key T
 	if (_key == 't' || _key == 'T')
@@ -215,6 +213,7 @@ void funcMouseDragging(int _x, int _y)
 	viewPortTarget.y -= diff.y * 2.0 * (1.0f / windowWidth);
 }
 
+
 static void funcMouse(int _btn, int _state, int _x, int _y)
 {
 	updateMousePositions(_x, _y);
@@ -224,28 +223,38 @@ static void funcMouse(int _btn, int _state, int _x, int _y)
 		isPressingMouseButton = true;
 	}
 	else if (_state == GLUT_UP) {
+
 		isPressingMouseButton = false;
 
+		//ADDING A POINT TO POLYGON HERE
 		if (isDrawingMode) {
 			if (isMouseInsideCanvas) {
-				//pointLastAdded.x =YfromPoint(pointMouseOnCanvasSnappedToGrid);
-
+	
 				//New point will be added into polygon
-				if (polygonDrawn->getSize() > 0)
-				cout << dist(polygonDrawn->getFirstPoint(), pointMouseOnCanvasSnappedToGrid) << endl;
-				// pointNewToAdd = new Point(pointMouseOnCanvasSnappedToGrid);
-				if (polygonDrawn->getSize() == 0)
-					polygonDrawn->addPoint(pointMouseOnCanvasSnappedToGrid);
-				else if (dist(polygonDrawn->getFirstPoint(), pointMouseOnCanvasSnappedToGrid) < 8.0) {
-					setDrawingMode(false);
-					PolygonicArray* newPolygon = new PolygonicArray(polygonDrawn->getSize());
-					//Need to copy data here
+				//if (polygonDrawn->getSize() == 0)
+				polygonDrawn->addPoint(pointMouseOnCanvasSnappedToGrid);
+
+				pointLastAdded = pointMouseOnCanvasSnappedToGrid;
+
+				if (polygonDrawn->getSize() > 1)
+				if (dist(polygonDrawn->getFirstPoint(), pointMouseOnCanvasSnappedToGrid) < 8.0) {
+					
+					PolygonArray* newPolygon = new PolygonArray(polygonDrawn->getSize());
+
+					//Need to copy data from vector to array
+					for (int i = 0; i < polygonDrawn->getSize(); i++)
+						newPolygon->addPoint(polygonDrawn->getPoint(i));
+
 					polygonList.push_back(newPolygon);  //Pushing the draw polygon
 					polygonDrawn->clearData();	  //Recreating new polygon for next drawing
 					pointLastAdded = { -1, -1 };
+
+					setDrawingMode(false);
 				}
-				else
-					polygonDrawn->addPoint(pointMouseOnCanvasSnappedToGrid);
+				
+				
+				//else
+					//polygonDrawn->addPoint(pointMouseOnCanvasSnappedToGrid);
 			}
 		}
 	}
@@ -259,24 +268,25 @@ static void drawCanvas()
 
 static void drawPolygons()
 {
-	
-	if (polygonList.size() > 0)
-	for (auto it = polygonList.begin(); it != polygonList.end(); ++it)
-		glDrawer->drawPolygon(*it, COLOR_BLUE, 2);
 
-	if (polygonDrawn->getSize() > 0) {
+	//if (polygonList.size() > 0)
+		for (auto it = polygonList.begin(); it != polygonList.end(); ++it)
+			glDrawer->drawPolygon(*it, COLOR_BLUE, 2);
 
-		ColorType colorPolygonDrawn = COLOR_ORANGE;
+	if (polygonDrawn->getSize() > 1) {
+
+		ColorType colorPolygonDrawn = COLOR_RED;
 
 		if (dist(polygonDrawn->getFirstPoint(), pointMouseOnCanvasSnappedToGrid) < 5.0)
 			colorPolygonDrawn = COLOR_GREEN;
 
 		glDrawer->drawPolygon(polygonDrawn, colorPolygonDrawn, 2);
-	}
 
-	if (isDrawingMode && isMouseInsideCanvas && pointLastAdded.x > -1 && isPressingMouseButton)
-	{
-		glDrawer->drawLine(pointLastAdded, pointMouseOnCanvasSnappedToGrid, COLOR_ORANGE, 2);
+
+		if (isDrawingMode && isMouseInsideCanvas && polygonDrawn->getSize() > 1 && isPressingMouseButton)
+		{
+			glDrawer->drawLine(pointLastAdded, pointMouseOnCanvasSnappedToGrid, COLOR_ORANGE, 2);
+		}
 	}
 }
 
@@ -304,8 +314,8 @@ void funcDisplay() {
 void funcTimer10ms(int _t) {
 
 	zoom += (zoomTarget - zoom) / 10.0f;
-	viewPort.x +=((viewPortTarget.x - viewPort.x) / 10.0f);
-	viewPort.y +=((viewPortTarget.y - viewPort.y) / 10.0f);
+	viewPort.x += ((viewPortTarget.x - viewPort.x) / 10.0f);
+	viewPort.y += ((viewPortTarget.y - viewPort.y) / 10.0f);
 
 	glutTimerFunc(10, funcTimer10ms, 0);
 }
