@@ -1,5 +1,5 @@
 /*
- * Relimetrics_OpenGL_Assesment - v0.2.2
+ * Relimetrics_OpenGL_Assesment - v0.2.3
  *
  * Created by Furkan Cetin (08/05/2021)
  *
@@ -28,8 +28,10 @@ float zoomTarget = 1.0f;
 
 Point* viewPort;
 Point* viewPortTarget;
-Point* mouseNow;
+Point* mouseOnScreen;
 Point* mousePressed;
+Point* mouseOnCanvas;
+
 GLDrawer* glDrawer;
 
 GLint vp[4];
@@ -38,24 +40,34 @@ GLint vp[4];
 int mainmode = MODE_NONE;
 bool isDragging = false;
 
-vector<Polygonic> polygonList;
+vector<Polygonic*> polygonList;
+Polygonic* polygonDrawn;
 
-
-static void setMainmode(int _mode)
+static void setMainmode(Modes _mode)
 {
 	if (mainmode != _mode)
 		mainmode = _mode;
+
+	if (mainmode == Modes::MODE_DRAWING) {
+		glutSetCursor(GLUT_CURSOR_CROSSHAIR);
+	}
+	else if (mainmode == Modes::MODE_NONE) {
+		glutSetCursor(GLUT_CURSOR_INHERIT);
+	}
 }
 
 static void funcInit() {
 	viewPort = new Point(0, 0);
 	viewPortTarget = new Point(0, 0);
 
-	mouseNow = new Point(0, 0);
+	mouseOnScreen = new Point(0, 0);
 	mousePressed = new Point(0, 0);
+	mouseOnCanvas = new Point(0, 0);
 
 	glDrawer = new GLDrawer();
-	glDrawer->setCanvasPorperties(800,600,20,GRID_TYPE_SQUARE_POINTS);
+	glDrawer->setCanvasPorperties(1200, 800, 20, GRID_TYPE_SQUARE_POINTS);
+
+	polygonDrawn = new Polygonic();
 }
 
 static void funcReshape(int _width, int _height)
@@ -117,28 +129,32 @@ static void funcKey(unsigned char _key, int x, int y)
 	}
 }
 
-void mouseDragging(int _x, int _y)
+void funcMouseDragging(int _x, int _y)
 {
-	mouseNow->setXY(_x, _y);
+	mouseOnScreen->setXY(_x, _y);
+	mouseOnCanvas->setX((_x - (viewPort->getX()*ww / 2.0 + ww / 2.0)) / zoom);
+	mouseOnCanvas->setY((_y - (viewPort->getY()*-hh / 2.0 + hh / 2.0)) / zoom);
 
 	if (isDragging == false)
 		return;
 
 	Point diff;
 	diff.setXY(_x - mousePressed->getX(), _y - mousePressed->getY());
-	//cout << diff.getX() << "|" << diff.getY() << endl;
 
 	mousePressed->setXY(_x, _y);
-	viewPortTarget->setRelXY(diff.getX() * 2.0 * (1.0f / ww)  , diff.getY() * -2.0 * (1.0f / hh));
+	viewPortTarget->setRelXY(diff.getX() * 2.0 * (1.0f / ww), diff.getY() * -2.0 * (1.0f / hh));
 }
 
 static void funcMouse(int _btn, int _state, int _x, int _y)
 {
+	mouseOnCanvas->setX((_x - (viewPort->getX()*ww / 2.0 + ww / 2.0)) / zoom);
+	mouseOnCanvas->setY((_y - (viewPort->getY()*-hh / 2.0 + hh / 2.0)) / zoom);
+
 	if (_state == GLUT_DOWN) {
 
 		switch (_btn) {
 		case GLUT_LEFT_BUTTON:
-			cout << "left click at: (" << _x << ", " << _y << ")\n";
+			cout << "left click at: (" << _x << ", " << _y << ")  << " << zoom << "\n";
 			mousePressed->setXY(_x, _y);
 			isDragging = true;
 			break;
@@ -163,10 +179,10 @@ static void drawCanvas()
 	glDrawer->drawCanvasWithGrid();
 }
 
-static void drawGrid()
+static void drawPolygons()
 {
 
-	
+
 }
 
 void funcDisplay() {
@@ -175,15 +191,15 @@ void funcDisplay() {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glTranslatef(viewPort->getX(), viewPort->getY(), 0.0f);
-	gluOrtho2D(ww / 2.0f, -ww / 2.0f, hh / 2.0f, -hh / 2.0f);
+	gluOrtho2D(-ww / 2.0, ww / 2.0, hh / 2.0, -hh / 2.0);
 	glMatrixMode(GL_MODELVIEW);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glScalef(zoom, zoom, zoom);
 
-	drawGrid();
 	drawCanvas();
+	drawPolygons();
 
 	glPopMatrix();
 	glutSwapBuffers();
@@ -192,22 +208,23 @@ void funcDisplay() {
 
 void funcTimer10ms(int _t) {
 
-	zoom += (zoomTarget - zoom) / 15.0f;
+	zoom += (zoomTarget - zoom) / 10.0f;
+	viewPort->setRelX((viewPortTarget->getX() - viewPort->getX()) / 10.0f);
+	viewPort->setRelY((viewPortTarget->getY() - viewPort->getY()) / 10.0f);
 
-
-	if (false && dist(viewPortTarget, viewPort) < 1)
-	{
-		viewPort->setXYfromPoint(viewPortTarget);  //Makes equal to target point, so moving stops
-	}
-	else //there needs to be moving to the target point
-	{
-		
-		viewPort->setRelX((viewPortTarget->getX() - viewPort->getX()) / 15.0f);
-		viewPort->setRelY((viewPortTarget->getY() - viewPort->getY()) / 15.0f);
-	}
-
-	glutTimerFunc(10, funcTimer10ms, 0); //keeping the loop going
+	glutTimerFunc(10, funcTimer10ms, 0);
 }
+
+void funcTimer100ms(int _t) {
+
+	glutTimerFunc(100, funcTimer100ms, 0);
+}
+
+void funcTimer1000ms(int _t) {
+
+	glutTimerFunc(1000, funcTimer1000ms, 0);
+}
+
 
 int main(int argc, char** argv) {
 
@@ -219,16 +236,17 @@ int main(int argc, char** argv) {
 
 	glutInitWindowSize(1200, 800);
 	glutCreateWindow("Relimetrics - OpenGL Assessment");
-	
 
 	glutInitWindowPosition(50, 50);
 
 	glutIdleFunc(funcIdle);
 
 	glutTimerFunc(20, funcTimer10ms, 0);
+	glutTimerFunc(100, funcTimer100ms, 0);
+	glutTimerFunc(1000, funcTimer1000ms, 0);
 
 	glutMouseFunc(funcMouse);
-	glutMotionFunc(mouseDragging);
+	glutMotionFunc(funcMouseDragging);
 
 	glutKeyboardFunc(funcKey);
 	glutSpecialFunc(funcSpecialKey);

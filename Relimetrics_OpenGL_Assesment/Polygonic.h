@@ -8,9 +8,11 @@
 
 class Polygonic
 {
-	Polygonic();
+	
 
 public:
+	Polygonic();
+
 	void addPoint(Point*);
 	void addPoint(float, float);
 	
