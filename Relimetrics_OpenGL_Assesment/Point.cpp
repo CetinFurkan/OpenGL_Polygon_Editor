@@ -8,59 +8,33 @@ Point::Point(float _x, float _y) {
 	x = _x;
 	y = _y;
 }
-Point::Point(int _x, int _y) {
-	x = _x;
-	y = _y;
-}
 
-void Point::setXf(float _x) {
+
+void Point::setX(float _x) {
 	x = _x;
 }
-void Point::setYf(float _y) {
+void Point::setY(float _y) {
 	y = _y;
 }
-void Point::setXYf(float _x, float _y) {
-	x = _x;
-	y = _y;
-}
-
-void Point::setX(int _x) {
-	x = _x;
-}
-
-void Point::setY(int _y) {
-	y = _y;
-}
-
-void Point::setXY(int _x, int _y) {
+void Point::setXY(float _x, float _y) {
 	x = _x;
 	y = _y;
 }
 
 
-void Point::setRelXf(float _x) {
+
+void Point::setRelX(float _x) {
 	x += _x;
 }
-void Point::setRelYf(float _y) {
+void Point::setRelY(float _y) {
 	y += _y;
 }
-void Point::setRelXYf(float _x, float _y) {
+void Point::setRelXY(float _x, float _y) {
 	x += _x;
 	y += _y;
 }
 
-void Point::setRelX(int _x) {
-	x += _x;
-}
 
-void Point::setRelY(int _y) {
-	y += _y;
-}
-
-void Point::setRelXY(int _x, int _y) {
-	x += _x;
-	y += _y;
-}
 
 void Point::setXYfromPoint(Point *_p)
 {
@@ -75,22 +49,13 @@ void Point::setRelXYfromPoint(Point *_p)
 }
 
 
-int Point::getX()
-{
-	return int(x);
-}
 
-int Point::getY()
-{
-	return int(y);
-}
-
-float Point::getXf()
+float Point::getX()
 {
 	return x;
 }
 
-float Point::getYf()
+float Point::getY()
 {
 	return y;
 }

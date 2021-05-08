@@ -7,32 +7,20 @@ class Point
 public:
 	Point();
 	Point(float, float);
-	Point(int, int);
 
-	void setXf(float);
-	void setYf(float);
-	void setXYf(float, float);
+	void setX(float);
+	void setY(float);
+	void setXY(float, float);
 
-	void setX(int);
-	void setY(int);
-	void setXY(int, int);
-
-	void setRelXf(float);
-	void setRelYf(float);
-	void setRelXYf(float, float);
-
-	void setRelX(int);
-	void setRelY(int);
-	void setRelXY(int, int);
+	void setRelX(float);
+	void setRelY(float);
+	void setRelXY(float, float);
 
 	void setXYfromPoint(Point*);
 	void setRelXYfromPoint(Point*);
 
-	int getX();
-	int getY();
-
-	float getXf();
-	float getYf();
+	float getX();
+	float getY();
 
 private:
 	float x, y;
