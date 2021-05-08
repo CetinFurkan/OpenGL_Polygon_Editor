@@ -39,15 +39,14 @@ public:
 	~GLDrawer();
 
 	void drawPolygon(Polygonic*, ColorType , uint8_t);
-	void drawLine(Point*, Point*, ColorType, int);
+	void drawLine(Point, Point, ColorType, int);
 
 	void setCanvasPorperties(int, int, int);
 	void drawCanvasWithGrid();
 
-	void setCanvasType();
 	int getSnappedGridValueX(float);
 	int getSnappedGridValueY(float);
-	bool isPointInsideOfCanvas(Point*);
+	bool isPointInsideOfCanvas(Point);
 
 	void setRenderingMode(RenderTypes);
 	void switchGridOnOff();

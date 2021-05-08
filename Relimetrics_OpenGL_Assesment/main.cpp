@@ -25,17 +25,17 @@ enum Directions
 	DIR_DOWN,
 };
 
-GLint ww = 1200, hh = 800;
+GLint windowWidth = 1200, windowHeight = 800;
 
 float zoom = 0.02;
 float zoomTarget = 1.0f;
 
-Point* viewPort;
-Point* viewPortTarget;
-Point* pointMousePressed;
-Point* pointMouseOnCanvas;
-Point* pointMouseOnCanvasSnappedToGrid;
-Point* pointLastAdded;
+Point viewPort;
+Point viewPortTarget;
+Point pointMousePressed;
+Point pointMouseOnCanvas;
+Point pointMouseOnCanvasSnappedToGrid;
+Point pointLastAdded;
 
 GLDrawer* glDrawer;
 
@@ -47,9 +47,8 @@ bool isPressingMouseButton = false;
 bool isMouseInsideCanvas = false;
 bool isControlKeyPressed = false;
 
-vector<Polygonic*> polygonList;
-Polygonic* polygonDrawn;
-
+vector<PolygonicArray*> polygonList;
+PolygonVector* polygonDrawn;
 
 static void setDrawingMode(bool _mode)
 {
@@ -63,42 +62,43 @@ static void setDrawingMode(bool _mode)
 }
 
 static void funcInit() {
-	viewPort = new Point(0, 0);
-	viewPortTarget = new Point(0, 0);
+	viewPort = { 0.0f , 0.0f };
+	viewPortTarget = { 0.0f , 0.0f };
 
-	pointMousePressed = new Point(0, 0);
-	pointMouseOnCanvas = new Point(0, 0);
-	pointMouseOnCanvasSnappedToGrid = new Point(0, 0);
+	pointMousePressed = { 0.0f , 0.0f };
+	pointMouseOnCanvas = { 0.0f , 0.0f };
+	pointMouseOnCanvasSnappedToGrid = { 0.0f , 0.0f };
 
-	pointLastAdded = new Point(-1, -1);
+	pointLastAdded = { -1.0f , -1.0f };
+
+	polygonDrawn = new PolygonVector();
 
 	glDrawer = new GLDrawer();
 	glDrawer->setCanvasPorperties(1200, 800, 8);
 
-	polygonDrawn = new Polygonic();
 }
 
 static void funcReshape(int _width, int _height)
 {
-	ww = _width;
-	hh = _height;
-	glViewport(0, 0, ww, hh);
+	windowWidth = _width;
+	windowHeight = _height;
+	glViewport(0, 0, windowWidth, windowHeight);
 	glGetIntegerv(GL_VIEWPORT, vp);
 }
 
 void panScreen(Directions _dir, float _amount) {
 	if (_dir == DIR_LEFT) {
-		viewPortTarget->setRelX(_amount * (1.0f / ww));
+		viewPortTarget.x += (_amount * (1.0f / windowWidth));
 	}
 	else if (_dir == DIR_RIGHT) {
-		viewPortTarget->setRelX(-_amount * (1.0f / ww));
+		viewPortTarget.x -= (_amount * (1.0f / windowWidth));
 	}
 
 	if (_dir == DIR_UP) {
-		viewPortTarget->setRelY(-_amount * (1.0f / hh));
+		viewPortTarget.y -= (_amount * (1.0f / windowHeight));
 	}
 	else if (_dir == DIR_DOWN) {
-		viewPortTarget->setRelY(_amount * (1.0f / hh));
+		viewPortTarget.y += (_amount * (1.0f / windowHeight));
 	}
 }
 
@@ -110,8 +110,6 @@ static void funcSpecialKeyUp(int _key, int _x, int _y)
 
 static void funcSpecialKey(int _key, int _x, int _y)
 {
-	cout << "CTRL: " << _key  << endl;
-
 	if (_key == GLUT_KEY_F1)
 		glDrawer->setRenderingMode(RENDER_POINTS);
 	else if (_key == GLUT_KEY_F2)
@@ -119,7 +117,7 @@ static void funcSpecialKey(int _key, int _x, int _y)
 	else if (_key == GLUT_KEY_F3)
 		glDrawer->setRenderingMode(RENDER_POLYGON);
 
-	if (_key == GLUT_KEY_LEFT)
+	if (_key == GLUT_KEY_LEFT) 
 		panScreen(DIR_LEFT, 40);
 	else if (_key == GLUT_KEY_RIGHT)
 		panScreen(DIR_RIGHT, 40);
@@ -135,10 +133,6 @@ static void funcSpecialKey(int _key, int _x, int _y)
 
 void funcIdle()
 {
-	
-	
-		
-
 	glutPostRedisplay();
 }
 
@@ -146,8 +140,8 @@ void funcIdle()
 static void funcKey(unsigned char _key, int x, int y)
 {
 	//Pan Screen by changing viewPortTarget
-	viewPortTarget->setRelX((_key == 'd' || _key == 'D') * 36 * (1.0f / ww) - (_key == 'a' || _key == 'A') * 36 * (1.0f / ww));
-	viewPortTarget->setRelY((_key == 'w' || _key == 'W') * 36 * (1.0f / hh) - (_key == 's' || _key == 'S') * 36 * (1.0f / hh));
+	viewPortTarget.x += ((_key == 'a' || _key == 'A') * 36 * (1.0f / windowWidth) - (_key == 'd' || _key == 'D') * 36 * (1.0f / windowWidth));
+	viewPortTarget.y += ((_key == 's' || _key == 'S') * 36 * (1.0f / windowHeight) - (_key == 'w' || _key == 'W') * 36 * (1.0f / windowHeight));
 
 
 	//Zooming
@@ -176,12 +170,12 @@ static void funcKey(unsigned char _key, int x, int y)
 }
 
 void updateMousePositions(int _x, int _y) {
-	pointMouseOnCanvas->setX((_x - (viewPort->getX()*ww / 2.0 + ww / 2.0)) / zoom);
-	pointMouseOnCanvas->setY((_y - (viewPort->getY()*-hh / 2.0 + hh / 2.0)) / zoom);
+	pointMouseOnCanvas.x = ((_x - (viewPort.x*windowWidth / 2.0 + windowWidth / 2.0)) / zoom);
+	pointMouseOnCanvas.y = ((_y - (viewPort.y*-windowHeight / 2.0 + windowHeight / 2.0)) / zoom);
 
 	//Calculating the point SNAPPED to the grid 
-	pointMouseOnCanvasSnappedToGrid->setX(glDrawer->getSnappedGridValueX(pointMouseOnCanvas->getX()));
-	pointMouseOnCanvasSnappedToGrid->setY(glDrawer->getSnappedGridValueY(pointMouseOnCanvas->getY()));
+	pointMouseOnCanvasSnappedToGrid.x = (glDrawer->getSnappedGridValueX(pointMouseOnCanvas.x));
+	pointMouseOnCanvasSnappedToGrid.y = (glDrawer->getSnappedGridValueY(pointMouseOnCanvas.y));
 
 	//Checking if cursor is within the boundries of Canvas
 	isMouseInsideCanvas = glDrawer->isPointInsideOfCanvas(pointMouseOnCanvas);
@@ -213,10 +207,12 @@ void funcMouseDragging(int _x, int _y)
 
 	//Functions for panning the screen by mouse
 	Point diff;
-	diff.setXY(_x - pointMousePressed->getX(), _y - pointMousePressed->getY());
+	diff.x = _x - pointMousePressed.x;
+	diff.y = _y - pointMousePressed.y;
 
-	pointMousePressed->setXY(_x, _y);
-	viewPortTarget->setRelXY(diff.getX() * 2.0 * (1.0f / ww), diff.getY() * -2.0 * (1.0f / hh));
+	pointMousePressed = { float(_x), float(_y) };
+	viewPortTarget.x += diff.x * 2.0 * (1.0f / windowWidth);
+	viewPortTarget.y -= diff.y * 2.0 * (1.0f / windowWidth);
 }
 
 static void funcMouse(int _btn, int _state, int _x, int _y)
@@ -224,26 +220,32 @@ static void funcMouse(int _btn, int _state, int _x, int _y)
 	updateMousePositions(_x, _y);
 
 	if (_state == GLUT_DOWN) {
-		pointMousePressed->setXY(_x, _y);
+		pointMousePressed = { float(_x), float(_y) };
 		isPressingMouseButton = true;
 	}
 	else if (_state == GLUT_UP) {
 		isPressingMouseButton = false;
 
 		if (isDrawingMode) {
-			if (glDrawer->isPointInsideOfCanvas(pointMouseOnCanvas)) {
-				pointLastAdded->setXYfromPoint(pointMouseOnCanvasSnappedToGrid);
+			if (isMouseInsideCanvas) {
+				//pointLastAdded.x =YfromPoint(pointMouseOnCanvasSnappedToGrid);
 
 				//New point will be added into polygon
-				Point* pointNewToAdd = new Point(pointMouseOnCanvasSnappedToGrid);
-				polygonDrawn->addPoint(pointNewToAdd);
-
-				if (polygonDrawn->checkIfClosed()) {
+				if (polygonDrawn->getSize() > 0)
+				cout << dist(polygonDrawn->getFirstPoint(), pointMouseOnCanvasSnappedToGrid) << endl;
+				// pointNewToAdd = new Point(pointMouseOnCanvasSnappedToGrid);
+				if (polygonDrawn->getSize() == 0)
+					polygonDrawn->addPoint(pointMouseOnCanvasSnappedToGrid);
+				else if (dist(polygonDrawn->getFirstPoint(), pointMouseOnCanvasSnappedToGrid) < 8.0) {
 					setDrawingMode(false);
-					polygonList.push_back(polygonDrawn);  //Pushing the draw polygon
-					polygonDrawn = new Polygonic();		  //Recreating new polygon for next drawing
-					pointLastAdded->setXY(-1, -1);
+					PolygonicArray* newPolygon = new PolygonicArray(polygonDrawn->getSize());
+					//Need to copy data here
+					polygonList.push_back(newPolygon);  //Pushing the draw polygon
+					polygonDrawn->clearData();	  //Recreating new polygon for next drawing
+					pointLastAdded = { -1, -1 };
 				}
+				else
+					polygonDrawn->addPoint(pointMouseOnCanvasSnappedToGrid);
 			}
 		}
 	}
@@ -257,20 +259,25 @@ static void drawCanvas()
 
 static void drawPolygons()
 {
+	
+	if (polygonList.size() > 0)
 	for (auto it = polygonList.begin(); it != polygonList.end(); ++it)
 		glDrawer->drawPolygon(*it, COLOR_BLUE, 2);
 
-	ColorType colorPolygonDrawn = COLOR_ORANGE;
-	if (polygonDrawn->checkPointIsCloseToFirstPoint(pointMouseOnCanvasSnappedToGrid))
-		colorPolygonDrawn = COLOR_GREEN;
+	if (polygonDrawn->getSize() > 0) {
 
-	glDrawer->drawPolygon(polygonDrawn, colorPolygonDrawn, 2);
+		ColorType colorPolygonDrawn = COLOR_ORANGE;
 
-	if (isDrawingMode && isMouseInsideCanvas && pointLastAdded->getX() > -1 && isPressingMouseButton)
+		if (dist(polygonDrawn->getFirstPoint(), pointMouseOnCanvasSnappedToGrid) < 5.0)
+			colorPolygonDrawn = COLOR_GREEN;
+
+		glDrawer->drawPolygon(polygonDrawn, colorPolygonDrawn, 2);
+	}
+
+	if (isDrawingMode && isMouseInsideCanvas && pointLastAdded.x > -1 && isPressingMouseButton)
 	{
 		glDrawer->drawLine(pointLastAdded, pointMouseOnCanvasSnappedToGrid, COLOR_ORANGE, 2);
 	}
-
 }
 
 void funcDisplay() {
@@ -278,8 +285,8 @@ void funcDisplay() {
 	glPushMatrix();
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glTranslatef(viewPort->getX(), viewPort->getY(), 0.0f);
-	gluOrtho2D(-ww / 2.0, ww / 2.0, hh / 2.0, -hh / 2.0);
+	glTranslatef(viewPort.x, viewPort.y, 0.0f);
+	gluOrtho2D(-windowWidth / 2.0, windowWidth / 2.0, windowHeight / 2.0, -windowHeight / 2.0);
 	glMatrixMode(GL_MODELVIEW);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -297,8 +304,8 @@ void funcDisplay() {
 void funcTimer10ms(int _t) {
 
 	zoom += (zoomTarget - zoom) / 10.0f;
-	viewPort->setRelX((viewPortTarget->getX() - viewPort->getX()) / 10.0f);
-	viewPort->setRelY((viewPortTarget->getY() - viewPort->getY()) / 10.0f);
+	viewPort.x +=((viewPortTarget.x - viewPort.x) / 10.0f);
+	viewPort.y +=((viewPortTarget.y - viewPort.y) / 10.0f);
 
 	glutTimerFunc(10, funcTimer10ms, 0);
 }

@@ -4,7 +4,6 @@
 
 #include <cmath>
 #include <cstdlib>
-
 #include "Point.h"
 
 using namespace std;
@@ -36,25 +35,25 @@ using namespace std;
 #endif
 
 
-static float isInsidePointInRect(Point* _a, float _x, float _y, float _w, float _h) {
+static float isInsidePointInRect(Point _a, float _x, float _y, float _w, float _h) {
 	//checking each boundry one by one and this is the most efficient way
-	if (_a->getX() > _x)
-		if (_a->getX() < _x + _w)
-			if (_a->getY() > _y)
-				if (_a->getY() < _y + _h)
+	if (_a.x > _x)
+		if (_a.x < _x + _w)
+			if (_a.y > _y)
+				if (_a.y < _y + _h)
 					return true;
 
 	return false;
 }
 
-static float isInsidePointInCircle(Point* _a, float _x, float _y, float _r) {
+static float isInsidePointInCircle(Point _a, float _x, float _y, float _r) {
 	//distance to the center ofthe circle
-	return sqrt(pow(_a->getX() - _x, 2.0) + pow(_a->getY() - _y, _r));
+	return sqrt(pow(_a.x - _x, 2.0) + pow(_a.y - _y, _r));
 }
 
 
-static float dist(Point* _a, Point* _b) {
-	return sqrt(pow(_a->getX() - _b->getX(), 2.0) + pow(_a->getY() - _b->getY(), 2.0));
+static float dist(Point _a, Point _b) {
+	return sqrt(pow(_a.x - _b.x, 2.0) + pow(_a.y - _b.y, 2.0));
 }
 
 

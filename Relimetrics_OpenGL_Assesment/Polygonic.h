@@ -2,8 +2,9 @@
 #ifndef POLYGONIC_H
 #define POLYGONIC_H
 
-#include "Common.h"
+//#include "Common.h"
 #include "MathHelper.h"
+#include "Point.h"
 
 
 class Polygonic
@@ -11,23 +12,12 @@ class Polygonic
 public:
 	Polygonic();
 
-	void addPoint(Point*);
-	void addPoint(float, float);
-
-	Point* getLastPoint();
-
-	bool checkPointIsCloseToFirstPoint(Point * _p);
-
-	bool checkIfClosed();
+	virtual void addPoint(Point) = 0;
+	virtual Point getFirstPoint() = 0;
+	virtual Point getLastPoint() = 0;
+	virtual Point getPoint(int) = 0;
+	virtual int getSize() = 0;
 	
-protected:
-
-	vector<Point*> listPoint;
-	unsigned int size = 0;
-
-	bool isClosed = false;
-
-	friend class GLDrawer;
 };
 
 #endif POLYGONIC_H

@@ -18,15 +18,15 @@ GLDrawer::~GLDrawer()
 }
 
 
-void GLDrawer::drawLine(Point* _p0, Point* _p1, ColorType _col, int _t)
+void GLDrawer::drawLine(Point _p0, Point _p1, ColorType _col, int _t)
 {
 	glColorRGB(listColor[_col].r, listColor[_col].g, listColor[_col].b);
 	glLineWidth(_t);
 
 	glBegin(GL_LINES);
 
-	glVertex2f(_p0->getX(), _p0->getY());
-	glVertex2f(_p1->getX(), _p1->getY());
+	glVertex2f(_p0.x, _p0.y);
+	glVertex2f(_p1.x, _p1.y);
 
 	glEnd();
 
@@ -36,14 +36,15 @@ void GLDrawer::drawLine(Point* _p0, Point* _p1, ColorType _col, int _t)
 
 void GLDrawer::drawPolygon(Polygonic *_p, ColorType _col, uint8_t _t)
 {
+
 	if (activeRenderType == RENDER_POLYGON) {
 		glBegin(GL_TRIANGLE_FAN);
 		glColorRGB(listColor[_col].r, listColor[_col].g, listColor[_col].b);
-		for (uint8_t i = 2; i < _p->listPoint.size(); i++)
+		for (uint8_t i = 2; i < _p->getSize(); i++)
 		{
-			glVertex2f(_p->listPoint[0]->getX(), _p->listPoint[0]->getY());
-			glVertex2f(_p->listPoint[i]->getX(), _p->listPoint[i]->getY());
-			glVertex2f(_p->listPoint[i - 1]->getX(), _p->listPoint[i - 1]->getY());
+			glVertex2f(_p->getPoint(0).x, _p->getPoint(0).y);
+			glVertex2f(_p->getPoint(i).x, _p->getPoint(i).y);
+			glVertex2f(_p->getPoint(i - 1).x, _p->getPoint(i - 1).y);
 		}
 		glEnd();
 	}
@@ -57,13 +58,13 @@ void GLDrawer::drawPolygon(Polygonic *_p, ColorType _col, uint8_t _t)
 			glColorRGB(listColor[_col].r, listColor[_col].g, listColor[_col].b);
 
 		glLineWidth(3);
-		for (uint8_t i = 1; i < _p->listPoint.size(); i++)
+		for (uint8_t i = 1; i < _p->getSize(); i++)
 		{
-			glVertex2f(_p->listPoint[i]->getX(), _p->listPoint[i]->getY());
-			glVertex2f(_p->listPoint[i - 1]->getX(), _p->listPoint[i - 1]->getY());
+			glVertex2f(_p->getPoint(i).x, _p->getPoint(i).y);
+			glVertex2f(_p->getPoint(i-1).x, _p->getPoint(i-1).y);
 
-			glVertex2f(_p->listPoint[i]->getX(), _p->listPoint[i]->getY());
-			glVertex2f(_p->listPoint[0]->getX(), _p->listPoint[0]->getY());
+			glVertex2f(_p->getPoint(i).x, _p->getPoint(i).y);
+			glVertex2f(_p->getPoint(0).x, _p->getPoint(0).y);
 		}
 		glLineWidth(1);
 		glEnd();
@@ -73,9 +74,9 @@ void GLDrawer::drawPolygon(Polygonic *_p, ColorType _col, uint8_t _t)
 		glBegin(GL_POINTS);
 		glColorRGB(listColor[_col].r, listColor[_col].g, listColor[_col].b);
 		glPointSize(15.0);
-		for (uint8_t i = 0; i < _p->listPoint.size(); i++)
+		for (uint8_t i = 0; i < _p->getSize(); i++)
 		{
-			glVertex2f(_p->listPoint[i]->getX(), _p->listPoint[i]->getY());
+			glVertex2f(_p->getPoint(i).x, _p->getPoint(i).y);
 		}
 		glPointSize(1);
 		glEnd();
@@ -108,7 +109,7 @@ int GLDrawer::getSnappedGridValueY(float _y)
 	return floor((_y + gridSize / 2.0) / gridSize)*gridSize;
 }
 
-bool GLDrawer::isPointInsideOfCanvas(Point *_p)
+bool GLDrawer::isPointInsideOfCanvas(Point _p)
 {
 	if (!isGridActive)
 		return true;

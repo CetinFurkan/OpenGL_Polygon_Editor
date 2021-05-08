@@ -7,8 +7,10 @@
 #include <GL/glut.h> 
 #include <cstdint>
 
-#include "Polygonic.h"
 #include "Point.h"
+#include "Polygonic.h"
+#include "PolygonicArray.h"
+#include "PolygonVector.h"
 
 using namespace std;
 
