@@ -35,10 +35,9 @@ class GLDrawer
 {
 
 public:
-	GLDrawer();
-	~GLDrawer();
+	static GLDrawer* getInstance();
 
-	void drawPolygon(PolygonParent*, ColorType , uint8_t);
+	void drawPolygon(PolygonParent*, ColorType);
 	void drawLine(Point, Point, ColorType, int);
 
 	void setCanvasPorperties(int, int, int);
@@ -51,8 +50,10 @@ public:
 	void setRenderingMode(RenderTypes);
 	void switchGridOnOff();
 
+	
+
 protected:
-	bool isGridActive = true;
+	bool isGridActive = false;
 
 	int canvasWidth = 0;
 	int canvasHeight = 0;
@@ -61,7 +62,11 @@ protected:
 	RenderTypes activeRenderType = RENDER_POLYGON;
 
 	ColorData listColor[8];
+	void initColors();
 	
+private:
+	static GLDrawer* instance;
+	GLDrawer();
 };
 
 
@@ -74,13 +79,6 @@ static void glColorRGB(ColorData _color) {
 	glColor3f(_color.r / 255.0f, _color.g / 255.0f, _color.b / 255.0f);
 }
 
-
-
-/*
-static void glColorRGB(ColorType _color) {
-	return listColor[_color];
-
-}*/
 
 
 #endif GLDRAWER_H

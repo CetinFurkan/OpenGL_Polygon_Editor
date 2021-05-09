@@ -1,20 +1,34 @@
 #include "GLDrawer.h"
 
-GLDrawer::GLDrawer()
+//Singleton
+GLDrawer* GLDrawer::instance = 0;
+
+GLDrawer* GLDrawer::getInstance()
 {
-	listColor[0] = { 255,255,255 }; //COLOR_WHITE = 0,
-	listColor[1] = { 0  ,0  ,0 }; //COLOR_BLACK = 1,
-	listColor[2] = { 255,0  ,0 }; //COLOR_RED = 2,
-	listColor[3] = { 0  ,0  ,255 }; //COLOR_BLUE = 3,
-	listColor[4] = { 0  ,255,0 }; //COLOR_GREEN = 4,
-	listColor[5] = { 255,255,0 }; //COLOR_YELLOW = 5,
-	listColor[6] = { 205,130,0 }; //COLOR_ORANGE = 6,
-	listColor[7] = { 0  ,255,255 }; //COLOR_AQUA = 7,
+	if (instance == 0)
+	{
+		instance = new GLDrawer();
+	}
+
+	return instance;
 }
 
-GLDrawer::~GLDrawer()
+GLDrawer::GLDrawer()
 {
+	initColors();
+}
 
+
+void GLDrawer::initColors()
+{
+	listColor[0] = { 255,255,255 }; //COLOR_WHITE = 0,
+	listColor[1] = { 0  ,0  ,0 };   //COLOR_BLACK = 1,
+	listColor[2] = { 255,0  ,0 };   //COLOR_RED = 2,
+	listColor[3] = { 0  ,0  ,255 }; //COLOR_BLUE = 3,
+	listColor[4] = { 0  ,255,0 };   //COLOR_GREEN = 4,
+	listColor[5] = { 255,255,0 };   //COLOR_YELLOW = 5,
+	listColor[6] = { 205,130,0 };   //COLOR_ORANGE = 6,
+	listColor[7] = { 0  ,255,255 }; //COLOR_AQUA = 7,
 }
 
 
@@ -33,12 +47,10 @@ void GLDrawer::drawLine(Point _p0, Point _p1, ColorType _col, int _t)
 	glLineWidth(1);
 }
 
-
-void GLDrawer::drawPolygon(PolygonParent *_p, ColorType _col, uint8_t _t)
+//Main Polygon drawing function 
+void GLDrawer::drawPolygon(PolygonParent *_p, ColorType _col)
 {
-	//cout << _p->getSize();
-
-	if (activeRenderType == RENDER_POLYGON) {
+	if (activeRenderType == RENDER_POLYGON) {  //Draw Filled Polygon first, so that it remains at bottom when drawing on screen 
 		glBegin(GL_TRIANGLE_FAN);
 		glColorRGB(listColor[_col].r, listColor[_col].g, listColor[_col].b);
 		for (uint8_t i = 2; i < _p->getSize(); i++)
@@ -50,11 +62,11 @@ void GLDrawer::drawPolygon(PolygonParent *_p, ColorType _col, uint8_t _t)
 		glEnd();
 	}
 
-	if (activeRenderType == RENDER_POLYGON || activeRenderType == RENDER_LINES) {
+	if (activeRenderType == RENDER_POLYGON || activeRenderType == RENDER_LINES) { //Lines are drawn (it here is polygon, lines are darawn onto them 
 		glBegin(GL_LINES);
 
 		if (activeRenderType == RENDER_POLYGON)
-			glColorRGB(200,0,200);
+			glColorRGB(255,255,255);
 		else
 			glColorRGB(listColor[_col].r, listColor[_col].g, listColor[_col].b);
 
@@ -71,7 +83,7 @@ void GLDrawer::drawPolygon(PolygonParent *_p, ColorType _col, uint8_t _t)
 		glEnd();
 	}
 
-	if (activeRenderType == RENDER_POINTS) {
+	if (activeRenderType == RENDER_POINTS) {//Draws small points at each point data
 		glBegin(GL_POINTS);
 		glColorRGB(255,255,255);
 		glPointSize(15.0);
@@ -128,7 +140,7 @@ void GLDrawer::switchGridOnOff()
 	isGridActive = !isGridActive;
 }
 
-
+//Basic drawing function
 void GLDrawer::drawCanvasWithGrid() {
 
 	if (isGridActive == false)

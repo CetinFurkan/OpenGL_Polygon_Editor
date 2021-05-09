@@ -1,6 +1,6 @@
 #pragma once
-#ifndef POLYGONICARRAY_H
-#define POLYGONICARRAY_H
+#ifndef POLYGONARRAY_H
+#define POLYGONARRAY_H
 
 #include "PolygonParent.h"
 
@@ -23,4 +23,4 @@ protected:
 	
 };
 
-#endif POLYGONICARRAY_H
+#endif POLYGONARRAY_H

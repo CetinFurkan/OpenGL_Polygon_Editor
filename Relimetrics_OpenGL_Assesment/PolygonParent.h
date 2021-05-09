@@ -1,9 +1,7 @@
 #pragma once
-#ifndef POLYGONIC_H
-#define POLYGONIC_H
+#ifndef POLYGONPARENT_H
+#define POLYGONPARENT_H
 
-//#include "Common.h"
-#include "MathHelper.h"
 #include "Point.h"
 
 
@@ -20,4 +18,4 @@ public:
 	
 };
 
-#endif POLYGONIC_H
+#endif POLYGONPARENT_H

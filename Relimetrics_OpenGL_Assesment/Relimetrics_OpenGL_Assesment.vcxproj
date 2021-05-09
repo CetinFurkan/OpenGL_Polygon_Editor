@@ -125,8 +125,8 @@
   <ItemGroup>
     <ClCompile Include="GLDrawer.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="PolygonParent.cpp" />
     <ClCompile Include="PolygonArray.cpp" />
+    <ClCompile Include="PolygonParent.cpp" />
     <ClCompile Include="PolygonVector.cpp" />
   </ItemGroup>
   <ItemGroup>

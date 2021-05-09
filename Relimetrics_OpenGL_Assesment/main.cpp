@@ -1,22 +1,22 @@
 /*
- * Relimetrics_OpenGL_Assesment - v0.5.0
+ * Relimetrics_OpenGL_Assesment - v1.0.0
  *
  * Created by Furkan Cetin (09/05/2021)
  *
  */
 
-
 #include <windows.h>  
 #include "Common.h"
-
 #include "GLDrawer.h"
 
-#include <iostream>
+ ////////////////////////////////////////////////
+//You can edit Canvas properties here!!!
+#define CANVAS_WIDTH     1600
+#define CANVAS_HEIGHT    1200
+#define CANVAS_GRID_SIZE    8
+////////////////////////////////////////////////
 
-
-using namespace std;
-
-
+//Needed for panning around
 enum Directions
 {
 	DIR_RIGHT,
@@ -27,8 +27,8 @@ enum Directions
 
 GLint windowWidth = 1200, windowHeight = 800;
 
-float zoom = 0.02;
-float zoomTarget = 1.0f;
+float zoom = 1.0f;
+float zoomTarget = 1.5f;
 
 Point viewPort;
 Point viewPortTarget;
@@ -38,8 +38,6 @@ Point pointMouseOnCanvasSnappedToGrid;
 Point pointLastAdded;
 
 GLDrawer* glDrawer;
-
-GLint vp[4];
 
 bool isDrawingMode = false;
 
@@ -63,7 +61,7 @@ static void setDrawingMode(bool _mode)
 
 static void funcInit() {
 	viewPort = { 0.0f , 0.0f };
-	viewPortTarget = { 0.0f , 0.0f };
+	viewPortTarget = { -1.0f , 1.0f };
 
 	pointMousePressed = { 0.0f , 0.0f };
 	pointMouseOnCanvas = { 0.0f , 0.0f };
@@ -73,9 +71,8 @@ static void funcInit() {
 
 	polygonDrawn = new PolygonVector();
 
-	glDrawer = new GLDrawer();
-	glDrawer->setCanvasPorperties(1200, 800, 8);
-
+	glDrawer = GLDrawer::getInstance();
+	glDrawer->setCanvasPorperties(CANVAS_WIDTH, CANVAS_HEIGHT, CANVAS_GRID_SIZE);
 }
 
 static void funcReshape(int _width, int _height)
@@ -83,10 +80,11 @@ static void funcReshape(int _width, int _height)
 	windowWidth = _width;
 	windowHeight = _height;
 	glViewport(0, 0, windowWidth, windowHeight);
-	glGetIntegerv(GL_VIEWPORT, vp);
 }
 
 void panScreen(Directions _dir, float _amount) {
+	cout << _dir;
+
 	if (_dir == DIR_LEFT) {
 		viewPortTarget.x += (_amount * (1.0f / windowWidth));
 	}
@@ -117,6 +115,7 @@ static void funcSpecialKey(int _key, int _x, int _y)
 	else if (_key == GLUT_KEY_F3)
 		glDrawer->setRenderingMode(RENDER_POLYGON);
 
+	/* Optional Use for panning on screen
 	if (_key == GLUT_KEY_LEFT)
 		panScreen(DIR_LEFT, 40);
 	else if (_key == GLUT_KEY_RIGHT)
@@ -126,6 +125,8 @@ static void funcSpecialKey(int _key, int _x, int _y)
 		panScreen(DIR_UP, 40);
 	else if (_key == GLUT_KEY_DOWN)
 		panScreen(DIR_DOWN, 40);
+	*/
+
 
 	//Detection CTRL is not working
 	//if (glutGetModifiers() == GLUT_ACTIVE_CTRL)
@@ -134,7 +135,7 @@ static void funcSpecialKey(int _key, int _x, int _y)
 
 void funcIdle()
 {
-	//glutPostRedisplay();
+	glutPostRedisplay();
 }
 
 
@@ -271,7 +272,7 @@ static void drawPolygons()
 
 	//if (polygonList.size() > 0)
 		for (auto it = polygonList.begin(); it != polygonList.end(); ++it)
-			glDrawer->drawPolygon(*it, COLOR_BLUE, 2);
+			glDrawer->drawPolygon(*it, COLOR_GREEN);
 
 	if (polygonDrawn->getSize() > 1) {
 
@@ -280,7 +281,7 @@ static void drawPolygons()
 		if (dist(polygonDrawn->getFirstPoint(), pointMouseOnCanvasSnappedToGrid) < 5.0)
 			colorPolygonDrawn = COLOR_GREEN;
 
-		glDrawer->drawPolygon(polygonDrawn, colorPolygonDrawn, 2);
+		glDrawer->drawPolygon(polygonDrawn, colorPolygonDrawn);
 
 
 		if (isDrawingMode && isMouseInsideCanvas && polygonDrawn->getSize() > 1 && isPressingMouseButton)
@@ -333,7 +334,7 @@ int main(int argc, char** argv) {
 	glutCreateWindow("Relimetrics - OpenGL Assessment");
 	glutInitWindowPosition(50, 50);
 
-	glutTimerFunc(20, funcTimer10ms, 0);
+	glutTimerFunc(10, funcTimer10ms, 0);
 
 	glutIdleFunc(funcIdle);
 	glutMouseFunc(funcMouse);
@@ -342,7 +343,6 @@ int main(int argc, char** argv) {
 	glutKeyboardFunc(funcKey);
 
 	glutSpecialFunc(funcSpecialKey);
-	//glutSpecialUpFunc(funcSpecialKeyUp);
 
 	glutReshapeFunc(funcReshape);
 	glutDisplayFunc(funcDisplay);

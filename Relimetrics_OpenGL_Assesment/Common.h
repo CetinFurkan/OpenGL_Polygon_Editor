@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "Point.h"
+#include "MathHelper.h"
 #include "PolygonParent.h"
 #include "PolygonArray.h"
 #include "PolygonVector.h"
