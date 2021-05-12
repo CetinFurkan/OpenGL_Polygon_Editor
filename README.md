@@ -1,3 +1,5 @@
+![screenshot](https://github.com/CetinFurkan/Relimetrics_OpenGL_Assesment/blob/f681ae36fd1efcfacdef8ffb6a451dc35197f5df/Relimetrics0.png)
+
 # Relimetrics Test Assignment: OpenGL Polygon Tool
 
 OpenGL Polygon Tool basically provides a user to create polygons by pressing
