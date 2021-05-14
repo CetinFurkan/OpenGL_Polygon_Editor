@@ -1,4 +1,4 @@
-# Relimetrics Test Assignment: OpenGL Polygon Tool
+# OpenGL Polygon Tool
 
 OpenGL Polygon Tool basically provides a user to create polygons by pressing
 mouse buttons on a window. It's written in C++ (Visual Studio 2017) with using GLUT(OpenGL Utility Toolkit) that supports OpenGL 3.7.
